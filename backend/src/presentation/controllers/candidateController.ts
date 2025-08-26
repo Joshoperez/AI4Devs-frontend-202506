@@ -33,19 +33,38 @@ export const getCandidateById = async (req: Request, res: Response) => {
 
 export const updateCandidateStageController = async (req: Request, res: Response) => {
     try {
+        console.log('Request body:', req.body);
+        console.log('Request params:', req.params);
+        
         const id = parseInt(req.params.id);
-        const { applicationId, currentInterviewStep } = req.body;
+        const { new_interview_step, applicationId } = req.body;
+        
+        console.log('Parsed ID:', id);
+        console.log('new_interview_step:', new_interview_step);
+        console.log('applicationId:', applicationId);
+        
+        if (!new_interview_step) {
+            return res.status(400).json({ error: 'new_interview_step is required' });
+        }
+        
         const applicationIdNumber = parseInt(applicationId);
         if (isNaN(applicationIdNumber)) {
-            return res.status(400).json({ error: 'Invalid position ID format' });
+            return res.status(400).json({ error: 'Invalid applicationId format' });
         }
-        const currentInterviewStepNumber = parseInt(currentInterviewStep);
+        
+        const currentInterviewStepNumber = parseInt(new_interview_step);
         if (isNaN(currentInterviewStepNumber)) {
-            return res.status(400).json({ error: 'Invalid currentInterviewStep format' });
+            return res.status(400).json({ error: 'Invalid new_interview_step format' });
         }
+        
+        console.log('Calling updateCandidateStage with:', { id, applicationIdNumber, currentInterviewStepNumber });
+        
         const updatedCandidate = await updateCandidateStage(id, applicationIdNumber, currentInterviewStepNumber);
+        console.log('Updated candidate:', updatedCandidate);
+        
         res.status(200).json({ message: 'Candidate stage updated successfully', data: updatedCandidate });
     } catch (error: unknown) {
+        console.error('Error in updateCandidateStageController:', error);
         if (error instanceof Error) {
             if (error.message === 'Error: Application not found') {
                 res.status(404).json({ message: 'Application not found', error: error.message });

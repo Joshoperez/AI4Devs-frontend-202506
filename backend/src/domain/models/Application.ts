@@ -58,6 +58,7 @@ export class Application {
                 candidateId: candidateId
             }
         });
+        console.log('Prisma query result:', data);
         if (!data) return null;
         return new Application(data);
     }

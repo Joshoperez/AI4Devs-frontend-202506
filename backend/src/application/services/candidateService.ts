@@ -67,19 +67,26 @@ export const findCandidateById = async (id: number): Promise<Candidate | null> =
 
 export const updateCandidateStage = async (id: number, applicationIdNumber: number, currentInterviewStep: number) => {
     try {
+        console.log('updateCandidateStage called with:', { id, applicationIdNumber, currentInterviewStep });
+        
         const application = await Application.findOneByPositionCandidateId(applicationIdNumber, id);
+        console.log('Found application:', application);
+        
         if (!application) {
             throw new Error('Application not found');
         }
 
         // Actualizar solo la etapa de la entrevista actual de la aplicación específica
         application.currentInterviewStep = currentInterviewStep;
+        console.log('Updated application currentInterviewStep to:', currentInterviewStep);
 
         // Guardar la aplicación actualizada
-        await application.save();
+        const savedApplication = await application.save();
+        console.log('Saved application:', savedApplication);
 
-        return application;
+        return savedApplication;
     } catch (error: any) {
+        console.error('Error in updateCandidateStage:', error);
         throw new Error(error);
     }
 };
